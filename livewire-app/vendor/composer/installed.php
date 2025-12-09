@@ -532,6 +532,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'livewire/flux' => array(
+            'pretty_version' => 'v2.9.2',
+            'version' => '2.9.2.0',
+            'reference' => '6572847f70a18e7cf136bb31201d4064f5c8ade1',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../livewire/flux',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'livewire/livewire' => array(
             'pretty_version' => 'v3.7.1',
             'version' => '3.7.1.0',

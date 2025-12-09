@@ -17,14 +17,15 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '606a39d89246991a373564698c2d8383' => __DIR__ . '/..' . '/symfony/polyfill-php85/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         '47e1160838b5e5a10346ac4084b58c23' => __DIR__ . '/..' . '/laravel/prompts/src/helpers.php',
+        '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         '09f6b20656683369174dd6fa83b7e5fb' => __DIR__ . '/..' . '/symfony/polyfill-uuid/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '40275907c8566c390185147049ef6e5d' => __DIR__ . '/..' . '/livewire/livewire/src/helpers.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '9d2b9fc6db0f153a0a149fefb182415e' => __DIR__ . '/..' . '/symfony/polyfill-php84/bootstrap.php',
         '476ca15b8d69b04665cd879be9cb4c68' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Collections/functions.php',
@@ -36,7 +37,6 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         '91892b814db86b8442ad76273bb7aec5' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Reflection/helpers.php',
         '493c6aea52f6009bab023b26c21a386a' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/functions.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        '40275907c8566c390185147049ef6e5d' => __DIR__ . '/..' . '/livewire/livewire/src/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'b0b808d855d8f6fc568ca07586cb55de' => __DIR__ . '/..' . '/livewire/volt/functions.php',
@@ -155,6 +155,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'F' =>
         array (
             'Fruitcake\\Cors\\' => 15,
+            'Flux\\' => 5,
             'Faker\\' => 6,
         ),
         'E' =>
@@ -485,6 +486,10 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Fruitcake\\Cors\\' =>
         array (
             0 => __DIR__ . '/..' . '/fruitcake/php-cors/src',
+        ),
+        'Flux\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/livewire/flux/src',
         ),
         'Faker\\' =>
         array (
@@ -1404,6 +1409,19 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'Faker\\Provider\\zh_TW\\Text' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Text.php',
         'Faker\\UniqueGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/UniqueGenerator.php',
         'Faker\\ValidGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/ValidGenerator.php',
+        'Flux\\AssetManager' => __DIR__ . '/..' . '/livewire/flux/src/AssetManager.php',
+        'Flux\\ClassBuilder' => __DIR__ . '/..' . '/livewire/flux/src/ClassBuilder.php',
+        'Flux\\Concerns\\InteractsWithComponents' => __DIR__ . '/..' . '/livewire/flux/src/Concerns/InteractsWithComponents.php',
+        'Flux\\Console\\ActivateCommand' => __DIR__ . '/..' . '/livewire/flux/src/Console/ActivateCommand.php',
+        'Flux\\Console\\IconCommand' => __DIR__ . '/..' . '/livewire/flux/src/Console/IconCommand.php',
+        'Flux\\Console\\PublishCommand' => __DIR__ . '/..' . '/livewire/flux/src/Console/PublishCommand.php',
+        'Flux\\DateRange' => __DIR__ . '/..' . '/livewire/flux/src/DateRange.php',
+        'Flux\\DateRangePreset' => __DIR__ . '/..' . '/livewire/flux/src/DateRangePreset.php',
+        'Flux\\DateRangeSynth' => __DIR__ . '/..' . '/livewire/flux/src/DateRangeSynth.php',
+        'Flux\\Flux' => __DIR__ . '/..' . '/livewire/flux/src/Flux.php',
+        'Flux\\FluxManager' => __DIR__ . '/..' . '/livewire/flux/src/FluxManager.php',
+        'Flux\\FluxServiceProvider' => __DIR__ . '/..' . '/livewire/flux/src/FluxServiceProvider.php',
+        'Flux\\FluxTagCompiler' => __DIR__ . '/..' . '/livewire/flux/src/FluxTagCompiler.php',
         'Fruitcake\\Cors\\CorsService' => __DIR__ . '/..' . '/fruitcake/php-cors/src/CorsService.php',
         'Fruitcake\\Cors\\Exceptions\\InvalidOptionException' => __DIR__ . '/..' . '/fruitcake/php-cors/src/Exceptions/InvalidOptionException.php',
         'GrahamCampbell\\ResultType\\Error' => __DIR__ . '/..' . '/graham-campbell/result-type/src/Error.php',
