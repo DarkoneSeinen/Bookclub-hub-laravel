@@ -198,6 +198,8 @@ Run migrations	./vendor/bin/sail artisan migrate
 Clear caches	./vendor/bin/sail artisan optimize:clear
 Open Tinker	./vendor/bin/sail artisan tinker
 Routes List	./vendor/bin/sail artisan route:list
+
+create model: ./vendor/bin/sail artisan make:model Article -a
 🧠 Why this works
 Problem	Cause	Fix
 Redirects to localhost	App didn’t trust proxy headers	trustProxies('*') in bootstrap/app.php
