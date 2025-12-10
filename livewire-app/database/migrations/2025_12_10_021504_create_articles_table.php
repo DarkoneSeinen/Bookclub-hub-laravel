@@ -17,7 +17,7 @@ return new class extends Migration
                 table: 'users', column: 'id' // referencia a la tabla users
             );
             $table->string('title');
-            $table->string('content');
+            $table->text('content');
             $table->boolean('is_published')->default(false);
             $table->timestamps();
         });
