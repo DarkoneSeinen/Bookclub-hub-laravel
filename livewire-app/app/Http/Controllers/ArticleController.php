@@ -53,7 +53,9 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        return view('articles.edit', compact('article'));
+        return view('articles.edit', [
+            'article' => $article
+        ]);
     }
 
     /**
@@ -61,7 +63,11 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article)
     {
-        //
+        $validated = $request->validated();
+
+        $article->update($validated);
+
+        return redirect()->route('articles.index');
     }
 
     /**
