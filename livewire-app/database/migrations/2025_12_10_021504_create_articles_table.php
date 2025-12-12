@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id(); // columnas de la tabla en la bd
             $table->foreignId('author_id')->constrained(
                 table: 'users', column: 'id' // referencia a la tabla users
-            );
+            )->CascadeOnDelete();
             $table->string('title');
             $table->text('content');
             $table->boolean('is_published')->default(false);
