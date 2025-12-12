@@ -5,6 +5,7 @@ use App\Livewire\Profile;
 use App\Livewire\Password;
 use App\Livewire\Appearance;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\UserController;
 
 Route::view('/', 'welcome');
 
@@ -24,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 
     Route::resource('articles', ArticleController::class);
+    Route::resource('users', UserController::class)->except(['show','create','store']);
 });
 
 require __DIR__.'/auth.php';
