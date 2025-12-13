@@ -1,0 +1,889 @@
+================================================================================
+                    📚 BOOKCLUB HUB - HOJA DE RUTA COMPLETA
+                  Biblioteca + Tienda de Libros + Clubs de Lectura
+================================================================================
+
+PROJECT NAME: BookClub Hub
+TYPE: Full-Stack E-Commerce + Community Platform
+TECH STACK: Laravel 12 + Livewire + Sail + Vite
+TARGET: Readers, Students, Book Clubs, Library Enthusiasts
+
+================================================================================
+                           🎯 VISIÓN DEL PROYECTO
+================================================================================
+
+BookClub Hub es una plataforma integral que combina:
+1. TIENDA ONLINE: Venta de libros físicos y digitales
+2. CLUBS DE LECTURA: Comunidad de lectores discutiendo libros
+3. BIBLIOTECA DIGITAL: Catálogo, recomendaciones, reviews
+4. GAMIFICACIÓN: Badges, logros, leaderboards
+
+Los usuarios pueden:
+- Comprar libros en la tienda
+- Unirse/crear clubs de lectura
+- Participar en discusiones
+- Escribir reseñas y notas
+- Gainer badges y logros
+- Seguir a otros lectores
+
+================================================================================
+                        📋 ESTRUCTURA DE BASE DE DATOS
+================================================================================
+
+TABLAS A CREAR:
+
+1. users (ya existe - extender)
+   ├── Roles: Admin, LibraryOwner, Seller, Reader
+   ├── avatar, bio, favorite_genres
+   └── preferences (notificaciones, privacidad)
+
+2. books
+   ├── title, author, isbn (único)
+   ├── description, cover_image
+   ├── pages, published_year
+   ├── genres (JSON)
+   ├── rating_avg, review_count
+   └── created_at, updated_at
+
+3. book_inventory (Control de stock para tienda)
+   ├── book_id
+   ├── quantity_available, quantity_sold
+   ├── price, discount_percentage
+   ├── format (físico, digital, ambos)
+   └── updated_at
+
+4. orders (Tienda)
+   ├── user_id, order_number (único)
+   ├── total_price, status (pendiente, pagado, enviado, entregado)
+   ├── shipping_address
+   ├── payment_method
+   ├── created_at
+
+5. order_items
+   ├── order_id, book_id
+   ├── quantity, unit_price
+   └── subtotal
+
+6. reviews
+   ├── user_id, book_id
+   ├── rating (1-5 estrellas)
+   ├── title, content
+   ├── helpful_count
+   └── created_at
+
+7. clubs
+   ├── name, description, owner_id
+   ├── cover_image, category
+   ├── max_members, is_private
+   ├── status (activo, pausa, archivado)
+   └── created_at, updated_at
+
+8. club_members (pivot)
+   ├── club_id, user_id
+   ├── role (owner, moderator, member)
+   ├── joined_at
+
+9. readings (Relación libro-club con datos extras)
+   ├── club_id, book_id
+   ├── start_date, end_date
+   ├── status (planeado, en curso, completado)
+   ├── pages_per_week
+   └── discussion_schedule (JSON)
+
+10. discussions
+    ├── club_id, book_id
+    ├── title, description
+    ├── chapter_range, scheduled_date
+    ├── status (planeado, activo, cerrado)
+    └── created_by (user_id)
+
+11. comments (Árbol de discusiones)
+    ├── discussion_id, user_id
+    ├── content, parent_comment_id
+    ├── likes_count
+    └── created_at
+
+12. votes (Votación para próximo libro)
+    ├── club_id, book_id, user_id
+    ├── voting_period_id
+    └── created_at
+
+13. voting_periods
+    ├── club_id, title
+    ├── start_date, end_date
+    ├── status, winner_book_id
+    └── created_at
+
+14. notes (Anotaciones colaborativas)
+    ├── user_id, book_id, club_id
+    ├── title, content (Markdown)
+    ├── page_reference, chapter_reference
+    ├── is_public, tags (JSON)
+    └── likes_count
+
+15. badges
+    ├── name, description, icon
+    ├── criteria (JSON: "100_books_read", "5_reviews", etc)
+    └── points (para leaderboard)
+
+16. user_badges (pivot)
+    ├── user_id, badge_id
+    ├── earned_at
+
+17. wishlist
+    ├── user_id, book_id
+    ├── added_at
+
+18. notifications
+    ├── user_id, type (new_discussion, vote_started, order_status, etc)
+    ├── data (JSON), read_at
+    └── created_at
+
+================================================================================
+                    📦 MODELOS LARAVEL (APP/MODELS)
+================================================================================
+
+Models a crear:
+
+1. Book.php
+   - belongsToMany(Order) - vendidos
+   - belongsToMany(Club) - readings
+   - hasMany(Review)
+   - hasMany(Note)
+   - hasOne(BookInventory)
+
+2. BookInventory.php
+   - belongsTo(Book)
+
+3. Order.php
+   - belongsTo(User)
+   - belongsToMany(Book) - through OrderItem
+
+4. OrderItem.php
+   - belongsTo(Order)
+   - belongsTo(Book)
+
+5. Review.php
+   - belongsTo(User)
+   - belongsTo(Book)
+
+6. Club.php
+   - belongsTo(User) - owner
+   - belongsToMany(User) - members through ClubMember
+   - belongsToMany(Book) - readings
+   - hasMany(Discussion)
+   - hasMany(VotingPeriod)
+
+7. Discussion.php
+   - belongsTo(Club)
+   - belongsTo(Book)
+   - belongsTo(User) - created_by
+   - hasMany(Comment)
+
+8. Comment.php
+   - belongsTo(Discussion)
+   - belongsTo(User)
+   - belongsTo(Comment) - parent (self-referencing)
+   - hasMany(Comment) - replies (self-referencing)
+
+9. Vote.php
+   - belongsTo(Club)
+   - belongsTo(Book)
+   - belongsTo(User)
+   - belongsTo(VotingPeriod)
+
+10. VotingPeriod.php
+    - belongsTo(Club)
+    - hasMany(Vote)
+    - belongsTo(Book) - winner
+
+11. Note.php
+    - belongsTo(User)
+    - belongsTo(Book)
+    - belongsTo(Club)
+
+12. Badge.php
+    - belongsToMany(User)
+
+13. Notification.php
+    - belongsTo(User)
+
+14. Wishlist.php (o usar pivot table)
+    - belongsTo(User)
+    - belongsTo(Book)
+
+================================================================================
+                        🛣️ FASES DE DESARROLLO
+================================================================================
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 0: CONFIGURACIÓN INICIAL (1-2 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 0.1 Crear estructura de carpetas
+    - app/Models/ (modelos)
+    - app/Http/Controllers/ (controllers)
+    - app/Http/Livewire/ (componentes Livewire)
+    - app/Actions/ (business logic)
+    - resources/views/ (vistas)
+    - database/migrations/ (migraciones)
+    - database/seeders/ (data inicial)
+
+[ ] 0.2 Instalar/Actualizar dependencias
+    - composer require livewire/livewire
+    - npm install (Tailwind, componentes)
+    - Verificar versiones: Laravel 12, PHP 8.3+
+
+[ ] 0.3 Configurar autenticación
+    - Extender User model con: avatar, bio, role, favorite_genres
+    - Crear seeders para usuarios de prueba
+
+[ ] 0.4 Configurar variables de entorno
+    - STRIPE_PUBLIC_KEY (para pagos)
+    - MAIL_FROM_ADDRESS (para notificaciones)
+    - CACHE_DRIVER=redis (sesiones)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 1: SISTEMA DE LIBROS Y TIENDA (1 semana)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Poder listar, filtrar y vender libros en la tienda
+
+[ ] 1.1 Crear migraciones
+    ├── create_books_table
+    ├── create_book_inventory_table
+    ├── create_reviews_table
+    ├── create_wishlist_table
+    └── create_orders_table + create_order_items_table
+
+[ ] 1.2 Crear modelos
+    ├── Book.php (con relaciones)
+    ├── BookInventory.php
+    ├── Review.php
+    ├── Order.php
+    ├── OrderItem.php
+    └── Wishlist.php
+
+[ ] 1.3 Crear seeders
+    ├── BookSeeder (50-100 libros de prueba con datos reales)
+    ├── BookInventorySeeder (stock inicial)
+    └── ReviewSeeder (reseñas de ejemplo)
+
+[ ] 1.4 Crear vistas
+    ├── resources/views/books/index.blade.php (catálogo con filtros)
+    ├── resources/views/books/show.blade.php (detalle de libro)
+    ├── resources/views/cart/index.blade.php (carrito)
+    └── resources/views/checkout/index.blade.php (pago básico)
+
+[ ] 1.5 Crear componentes Livewire
+    ├── BookSearch.php (búsqueda en vivo)
+    ├── BookFilters.php (filtrar por género, autor, precio)
+    ├── CartManager.php (agregar/quitar del carrito)
+    ├── ReviewForm.php (crear reseña)
+    └── RatingDisplay.php (mostrar estrellas)
+
+[ ] 1.6 Crear controladores
+    ├── BookController.php (index, show)
+    ├── CartController.php (add, remove, checkout)
+    ├── ReviewController.php (store, delete)
+    └── WishlistController.php (add, remove)
+
+[ ] 1.7 Rutas
+    ├── GET /books (catálogo)
+    ├── GET /books/{id} (detalle)
+    ├── POST /cart (agregar)
+    ├── GET /cart (ver carrito)
+    ├── POST /checkout (procesar pago)
+    ├── POST /reviews (crear reseña)
+    └── POST /wishlist (agregar a favoritos)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 2: SISTEMA DE PAGO (4-5 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Completar compras con Stripe
+
+[ ] 2.1 Instalar Stripe
+    - composer require stripe/stripe-php
+    - npm install --save @stripe/stripe-js
+
+[ ] 2.2 Crear CheckoutController
+    ├── Validar carrito
+    ├── Calcular impuestos/envío
+    ├── Crear intent de pago con Stripe
+    └── Guardar orden en BD
+
+[ ] 2.3 Crear vistas/componentes de pago
+    ├── Formulario de pago (tarjeta de crédito)
+    ├── Confirmar datos de envío
+    ├── Resumen de orden
+
+[ ] 2.4 Webhooks de Stripe
+    ├── Procesar confirmación de pago
+    ├── Actualizar estado de orden
+    ├── Reducir stock
+    ├── Enviar email de confirmación
+
+[ ] 2.5 Crear OrderController
+    ├── GET /orders (mis compras)
+    ├── GET /orders/{id} (detalle de orden)
+    ├── Enviar factura PDF
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 3: PANEL DE ADMINISTRACIÓN (1 semana)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Admin pueda gestionar libros, órdenes, usuarios
+
+[ ] 3.1 Crear middleware AdminMiddleware
+    - Proteger rutas /admin/*
+
+[ ] 3.2 Dashboard Admin
+    ├── Estadísticas: ventas totales, órdenes, usuarios
+    ├── Gráficos: ventas por mes, libros más vendidos
+    ├── Órdenes pendientes
+    └── Usuarios nuevos
+
+[ ] 3.3 Gestión de Libros
+    ├── CRUD completo (crear, editar, eliminar)
+    ├── Subir portada
+    ├── Gestionar stock
+    ├── Cambiar precios
+    └── Bulk upload (CSV)
+
+[ ] 3.4 Gestión de Órdenes
+    ├── Listar todas las órdenes
+    ├── Actualizar estado (pendiente -> enviado -> entregado)
+    ├── Generar etiqueta de envío
+    ├── Reembolsos
+
+[ ] 3.5 Gestión de Usuarios
+    ├── Listar usuarios
+    ├── Ver historial de compras
+    ├── Cambiar roles
+    ├── Suspender cuentas
+
+[ ] 3.6 Componentes Livewire Admin
+    ├── BooksTable.php (tabla con búsqueda)
+    ├── OrdersTable.php (tabla de órdenes)
+    ├── StatisticsCards.php (métricas)
+    └── ChartComponent.php (gráficos con Chart.js)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 4: SISTEMA DE CLUBS DE LECTURA (1.5 semanas)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Crear y gestionar clubs, invitar miembros
+
+[ ] 4.1 Crear migraciones
+    ├── create_clubs_table
+    ├── create_club_members_table
+    ├── create_readings_table
+    └── create_discussions_table
+
+[ ] 4.2 Crear modelos
+    ├── Club.php
+    ├── Discussion.php
+    └── Reading.php
+
+[ ] 4.3 Vistas principales
+    ├── resources/views/clubs/index.blade.php (explorador)
+    ├── resources/views/clubs/create.blade.php (crear club)
+    ├── resources/views/clubs/show.blade.php (dashboard del club)
+    └── resources/views/clubs/settings.blade.php (configuración)
+
+[ ] 4.4 Componentes Livewire
+    ├── ClubSearch.php (buscar clubs)
+    ├── ClubFilters.php (filtrar por género, tamaño)
+    ├── ClubCreate.php (crear nuevo club)
+    ├── MembersList.php (listar miembros)
+    ├── InviteMembers.php (invitar por email)
+    └── CurrentBook.php (mostrar libro actual)
+
+[ ] 4.5 Controladores
+    ├── ClubController.php (CRUD clubs)
+    ├── ClubMemberController.php (agregar/quitar miembros)
+    ├── ReadingController.php (agregar libro a club)
+    └── ClubSettingsController.php (configurar club)
+
+[ ] 4.6 Rutas
+    ├── GET /clubs (explorador)
+    ├── POST /clubs (crear)
+    ├── GET /clubs/{id} (dashboard)
+    ├── PUT /clubs/{id} (editar)
+    ├── DELETE /clubs/{id} (eliminar)
+    ├── POST /clubs/{id}/members (invitar)
+    ├── DELETE /clubs/{id}/members/{user_id} (remover)
+    └── POST /clubs/{id}/readings (agregar libro)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 5: FORO DE DISCUSIONES (1 semana)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Discutir libros por capítulos con respuestas anidadas
+
+[ ] 5.1 Crear migraciones
+    ├── create_discussions_table
+    ├── create_comments_table
+    └── create_likes_table
+
+[ ] 5.2 Crear modelos
+    ├── Discussion.php
+    ├── Comment.php
+    └── Like.php
+
+[ ] 5.3 Vistas
+    ├── resources/views/discussions/index.blade.php (listado)
+    ├── resources/views/discussions/show.blade.php (discusión)
+    └── resources/views/discussions/create.blade.php (crear)
+
+[ ] 5.4 Componentes Livewire
+    ├── DiscussionCreate.php (crear discusión)
+    ├── DiscussionList.php (listar discusiones)
+    ├── CommentThread.php (árbol de comentarios)
+    ├── CommentForm.php (escribir comentario)
+    ├── CommentReply.php (responder comentario)
+    └── LikeButton.php (dar like a comentario)
+
+[ ] 5.5 Controladores
+    ├── DiscussionController.php (CRUD)
+    ├── CommentController.php (crear, editar, eliminar)
+    └── LikeController.php (dar/quitar like)
+
+[ ] 5.6 Validaciones
+    ├── Solo miembros del club pueden comentar
+    ├── No permitir comentarios en discusiones cerradas
+    ├── Moderar contenido inapropiado
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 6: VOTACIÓN PARA PRÓXIMO LIBRO (5 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Club vota qué libro leer a continuación
+
+[ ] 6.1 Crear migraciones
+    ├── create_voting_periods_table
+    ├── create_votes_table
+    └── add_winner_book_id_to_voting_periods
+
+[ ] 6.2 Crear modelos
+    ├── VotingPeriod.php
+    └── Vote.php
+
+[ ] 6.3 Vistas
+    ├── resources/views/voting/index.blade.php (mostrar votación)
+    └── resources/views/voting/create.blade.php (crear votación)
+
+[ ] 6.4 Componentes Livewire
+    ├── VotingCard.php (mostrar libro candidato + contador de votos)
+    ├── VotingManager.php (crear período de votación)
+    ├── VoteResults.php (mostrar resultados)
+    ├── StartVoting.php (botón para iniciar)
+    └── VotingSchedule.php (mostrar fechas)
+
+[ ] 6.5 Controladores
+    ├── VotingController.php (crear período, mostrar resultados)
+    └── VoteController.php (guardar voto)
+
+[ ] 6.6 Lógica
+    ├── Cada miembro vota una sola vez
+    ├── Auto-cerrar votación a fecha límite
+    ├── Seleccionar ganador automáticamente
+    ├── Enviar notificación de resultado
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 7: NOTAS Y ANOTACIONES (5 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Usuarios anoten ideas, personajes, quotes
+
+[ ] 7.1 Crear migraciones
+    ├── create_notes_table
+    └── create_note_likes_table
+
+[ ] 7.2 Crear modelos
+    ├── Note.php
+    └── NoteLike.php
+
+[ ] 7.3 Vistas
+    ├── resources/views/notes/index.blade.php (mis notas)
+    ├── resources/views/notes/create.blade.php (crear nota)
+    └── resources/views/books/notes.blade.php (notas por libro)
+
+[ ] 7.4 Componentes Livewire
+    ├── NoteCreate.php (crear nota - Markdown editor)
+    ├── NotesList.php (listar notas personales)
+    ├── NoteDetail.php (ver nota completa)
+    ├── NoteShare.php (compartir con club)
+    ├── NoteTags.php (etiquetar por tema)
+    └── NoteLike.php (dar like)
+
+[ ] 7.5 Controladores
+    ├── NoteController.php (CRUD)
+    └── NoteLikeController.php (like/unlike)
+
+[ ] 7.6 Características
+    ├── Notas privadas (solo yo)
+    ├── Notas compartidas (todo el club)
+    ├── Filtrar por capítulo/página
+    ├── Editor Markdown
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 8: GAMIFICACIÓN - BADGES Y LOGROS (4 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Usuarios ganan badges por actividades
+
+[ ] 8.1 Crear migraciones
+    ├── create_badges_table
+    └── create_user_badges_table
+
+[ ] 8.2 Crear modelos
+    ├── Badge.php
+    └── Artisan command para asignar badges
+
+[ ] 8.3 Definir badges
+    ├── "Primer Paso": crear cuenta
+    ├── "Lector": comprar 1 libro
+    ├── "Coleccionista": tener 10 libros
+    ├── "Crítico": escribir 5 reseñas
+    ├── "Socializador": unirse a 3 clubs
+    ├── "Maestro de Clubs": crear 5 clubs
+    ├── "Conversador": 50 comentarios
+    ├── "Escritor": 20 notas
+    ├── "Cien Páginas": leer 100 páginas
+    ├── "Bibliotecario": 50 libros en perfil
+    └── Más badges según actividades
+
+[ ] 8.4 Sistema de puntos
+    ├── Asignar puntos por actividad
+    ├── Leaderboard global
+    ├── Leaderboard por club
+
+[ ] 8.5 Vistas
+    ├── resources/views/badges/index.blade.php (mis badges)
+    ├── resources/views/profile/achievements.blade.php (logros)
+    └── resources/views/leaderboard/index.blade.php (ranking)
+
+[ ] 8.6 Componentes Livewire
+    ├── BadgeDisplay.php (mostrar badge con tooltip)
+    ├── AchievementTracker.php (progreso hacia badges)
+    ├── Leaderboard.php (tabla de ranking)
+    └── PointsCounter.php (mis puntos)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 9: PERFIL DE USUARIO Y SOCIAL (5 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Perfiles públicos, seguir usuarios, feed social
+
+[ ] 9.1 Crear migraciones
+    ├── add_bio_avatar_to_users
+    ├── create_followers_table (pivot)
+    ├── create_activity_log_table
+    └── add_favorite_genres_to_users
+
+[ ] 9.2 Crear modelos
+    ├── Extender User.php
+    ├── Follower.php (pivot)
+    └── Activity.php
+
+[ ] 9.3 Vistas
+    ├── resources/views/profile/show.blade.php (perfil público)
+    ├── resources/views/profile/edit.blade.php (editar perfil)
+    ├── resources/views/profile/books.blade.php (libros del usuario)
+    ├── resources/views/profile/followers.blade.php (seguidores)
+    └── resources/views/feed/index.blade.php (feed de amigos)
+
+[ ] 9.4 Componentes Livewire
+    ├── ProfileCard.php (tarjeta de perfil)
+    ├── EditProfile.php (formulario edición)
+    ├── FollowButton.php (seguir/dejar de seguir)
+    ├── FollowersList.php (lista de seguidores)
+    ├── UserFeed.php (actividad reciente)
+    ├── RecommendedUsers.php (sugerir usuarios)
+    └── UserBooks.php (libros leídos del usuario)
+
+[ ] 9.5 Controladores
+    ├── ProfileController.php (show, edit, update)
+    ├── FollowController.php (follow, unfollow)
+    └── FeedController.php (ver feed)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 10: NOTIFICACIONES (4 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Usuarios reciben notificaciones de eventos importantes
+
+[ ] 10.1 Crear migraciones
+    ├── create_notifications_table
+    └── add_notification_preferences_to_users
+
+[ ] 10.2 Crear modelos
+    ├── Notification.php
+    └── NotificationPreference.php
+
+[ ] 10.3 Eventos y listeners
+    ├── NewDiscussionEvent -> enviar notificación
+    ├── VotingStartedEvent -> enviar notificación
+    ├── OrderStatusChangedEvent -> enviar email
+    ├── NewCommentEvent -> notificar al creador
+    ├── NewFollowerEvent -> notificar
+    └── BadgeEarnedEvent -> notificar
+
+[ ] 10.4 Componentes Livewire
+    ├── NotificationBell.php (ícono en navbar)
+    ├── NotificationDropdown.php (lista desplegable)
+    ├── NotificationSettings.blade.php (preferencias)
+    └── MarkAsRead.php (marcar como leída)
+
+[ ] 10.5 Email notifications
+    ├── Enviar email cuando: nueva discusión, votación, orden confirmada
+    ├── Plantillas de email
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 11: BÚSQUEDA Y RECOMENDACIONES (5 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Búsqueda potente y recomendaciones personalizadas
+
+[ ] 11.1 Búsqueda global
+    ├── Buscar libros por título, autor, ISBN
+    ├── Buscar clubs
+    ├── Buscar usuarios
+    ├── Componente Livewire: GlobalSearch.php
+
+[ ] 11.2 Integración con API de libros
+    ├── Open Library API para agregar libros
+    ├── Google Books API para metadatos
+    ├── Artisan command para importar libros
+
+[ ] 11.3 Recomendaciones
+    ├── Por género favorito
+    ├── Por libros que has leído
+    ├── Por ratings altos
+    ├── Trending (más vendidos esta semana)
+    ├── Componente: RecommendedBooks.php
+
+[ ] 11.4 Filtros avanzados
+    ├── Por año de publicación
+    ├── Por número de páginas
+    ├── Por rating mínimo
+    ├── Por precio
+    └── Componente: AdvancedFilters.php
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 12: BLOG Y CONTENIDO (4 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Blog para publicar artículos sobre libros, reseñas largas
+
+[ ] 12.1 Crear migraciones
+    ├── create_articles_table (ya existe - usar)
+    ├── create_article_categories_table
+    └── create_article_tags_table
+
+[ ] 12.2 Modelos
+    ├── Article.php (actualizar existente)
+    ├── ArticleCategory.php
+    └── ArticleTag.php
+
+[ ] 12.3 Vistas
+    ├── resources/views/blog/index.blade.php (listado de artículos)
+    ├── resources/views/blog/show.blade.php (artículo completo)
+    ├── resources/views/blog/create.blade.php (crear artículo)
+    └── resources/views/blog/edit.blade.php (editar)
+
+[ ] 12.4 Componentes Livewire
+    ├── ArticleEditor.php (editor WYSIWYG con TipTap)
+    ├── ArticleCard.php (tarjeta de artículo)
+    ├── ArticleList.php (lista con paginación)
+    ├── ArticleSearch.php (buscar artículos)
+    └── ArticleComments.php (comentarios en artículos)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 13: REPORTES Y ANÁLITICAS (4 días)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Admin ve reportes, usuarios ven sus estadísticas
+
+[ ] 13.1 Dashboards de usuario
+    ├── Libros leídos este año
+    ├── Géneros favoritos
+    ├── Progreso de lectura
+    ├── Actividad en clubs
+    ├── Gráficos con Chart.js
+
+[ ] 13.2 Reportes de admin
+    ├── Ventas totales por período
+    ├── Libros más vendidos
+    ├── Usuarios más activos
+    ├── Clubs más grandes
+    ├── Ingresos por categoría
+    └── Reportes descargables (PDF, CSV)
+
+[ ] 13.3 Vistas
+    ├── resources/views/dashboard/user.blade.php
+    ├── resources/views/admin/reports/sales.blade.php
+    ├── resources/views/admin/reports/users.blade.php
+    └── resources/views/admin/reports/clubs.blade.php
+
+[ ] 13.4 Componentes Livewire
+    ├── SalesChart.php
+    ├── TopBooks.php
+    ├── ActiveUsers.php
+    ├── RevenueChart.php
+    └── ExportReports.php
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 14: OPTIMIZACIÓN Y TESTING (1 semana)
+═══════════════════════════════════════════════════════════════════════════════
+
+OBJETIVO: Performance, seguridad, tests
+
+[ ] 14.1 Tests unitarios
+    ├── Modelos: validaciones, relaciones
+    ├── Actions: lógica de negocio
+    ├── Ubicación: tests/Unit/
+
+[ ] 14.2 Tests de características
+    ├── Flujo de compra completo
+    ├── Crear y gestionar club
+    ├── Sistema de votación
+    ├── Ubicación: tests/Feature/
+
+[ ] 14.3 Optimización
+    ├── Eager loading (with) en queries
+    ├── Índices en BD
+    ├── Cache de resultados frecuentes
+    ├── Lazy load de imágenes
+    ├── Minificar CSS/JS
+
+[ ] 14.4 Seguridad
+    ├── CSRF protection
+    ├── XSS prevention (escape output)
+    ├── SQL injection prevention (prepared statements)
+    ├── Rate limiting en APIs
+    ├── Validación en backend (nunca confiar en frontend)
+
+[ ] 14.5 SEO
+    ├── Meta tags en vistas principales
+    ├── Sitemap.xml
+    ├── robots.txt
+    ├── Structured data (JSON-LD)
+
+═══════════════════════════════════════════════════════════════════════════════
+FASE 15: FEATURES AVANZADAS (opcional, 1-2 semanas)
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 15.1 Integración con redes sociales
+    ├── Login con Google/GitHub
+    ├── Compartir en Twitter/Facebook
+    ├── Sincronizar seguidores
+
+[ ] 15.2 Libros digitales
+    ├── Subir PDF/EPUB
+    ├── Lector dentro de la plataforma
+    ├── Progreso de lectura en digital
+    ├── Sincronizar entre dispositivos
+
+[ ] 15.3 Recomendaciones IA
+    ├── Algoritmo de recomendación basado en ratings
+    ├── Sugerir clubs según gustos
+    ├── Análisis de sentimiento en reseñas
+
+[ ] 15.4 Programa de afiliados
+    ├── Código de referido
+    ├── Comisiones por ventas
+    ├── Dashboard de afiliado
+
+[ ] 15.5 Membresía premium
+    ├── Acceso a libros digitales
+    ├── Descuentos en tienda
+    ├── Insignias exclusivas
+    ├── Ad-free experience
+
+================================================================================
+                           📅 TIMELINE ESTIMADO
+================================================================================
+
+FASE 0 (Configuración):           2 días
+FASE 1 (Tienda - Libros):         7 días
+FASE 2 (Pagos - Stripe):          5 días
+FASE 3 (Admin):                   7 días
+FASE 4 (Clubs):                   10 días
+FASE 5 (Discusiones):             7 días
+FASE 6 (Votación):                5 días
+FASE 7 (Notas):                   5 días
+FASE 8 (Badges):                  4 días
+FASE 9 (Perfil Social):           5 días
+FASE 10 (Notificaciones):         4 días
+FASE 11 (Búsqueda):               5 días
+FASE 12 (Blog):                   4 días
+FASE 13 (Reportes):               4 días
+FASE 14 (Testing/Opt):            7 días
+FASE 15 (Features avanzadas):     10-14 días
+
+TOTAL MVP (Fases 0-10):           ~65 días (aprox. 2-3 meses)
+TOTAL CON EXTRAS (Fases 0-15):    ~85-105 días (3-3.5 meses)
+
+================================================================================
+                         🔧 STACK TÉCNICO FINAL
+================================================================================
+
+Backend:
+- Laravel 12
+- Laravel Sail (Docker)
+- MySQL/PostgreSQL
+- Redis (cache, sesiones)
+- Stripe (pagos)
+
+Frontend:
+- Livewire (interactividad)
+- Blade (templates)
+- Tailwind CSS (estilos)
+- Alpine.js (interacciones ligeras)
+- Chart.js (gráficos)
+- TipTap (editor Markdown)
+
+DevOps:
+- Docker (Sail)
+- GitHub Actions (CI/CD)
+- Vercel/Heroku (deployment)
+
+Integraciones:
+- Open Library API (datos de libros)
+- Google Books API
+- Stripe Payments
+- SendGrid/Mailgun (email)
+- AWS S3 (almacenamiento de imágenes)
+
+================================================================================
+                        ✅ CRITERIOS DE ÉXITO
+================================================================================
+
+MVP exitoso cuando:
+✓ Usuarios pueden comprar libros
+✓ Admin puede gestionar catálogo y órdenes
+✓ Usuarios pueden crear/unirse a clubs
+✓ Sistema de discusiones funcional
+✓ Votación para próximo libro funciona
+✓ Badges y gamificación básica
+✓ Notificaciones por email
+✓ Tests unitarios e integración
+✓ Desplegado en servidor (staging)
+
+================================================================================
+                         🚀 PRÓXIMOS PASOS
+================================================================================
+
+1. Revisar este roadmap contigo
+2. Comenzar FASE 0: Configuración
+3. Crear la estructura de migraciones (FASE 1)
+4. Crear seeders con datos reales
+5. Crear vistas y componentes Livewire
+6. Testear flujo completo
+
+¿COMENZAMOS CON LA FASE 0?
+
+================================================================================
