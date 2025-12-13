@@ -16,17 +16,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        $user= User::factory()->create([
+        // Crear usuario de prueba
+        $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
+        // Crear artículos
         Article::factory(20)
             ->recycle($user)
             ->create();
         
         Article::factory(20)->create();
+
+        // Ejecutar seeders del módulo de libros
+        $this->call([
+            BookSeeder::class,
+            ReviewSeeder::class,
+        ]);
     }
 }

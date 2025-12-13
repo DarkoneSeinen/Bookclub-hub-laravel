@@ -5,9 +5,14 @@ use App\Livewire\Profile;
 use App\Livewire\Password;
 use App\Livewire\Appearance;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 
 Route::view('/', 'welcome');
+
+// Catálogo de libros (público)
+Route::get('/books', [BookController::class, 'index'])->name('books.index');
+Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
