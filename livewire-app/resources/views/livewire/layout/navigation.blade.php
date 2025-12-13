@@ -34,9 +34,15 @@ new class extends Component
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('books.index')" :active="request()->routeIs('books.*')" wire:navigate>
-                        📚 {{ __('Libros') }}
+                        {{ __('Libros') }}
+                    </x-nav-link>                    <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')" wire:navigate>
+                        {{ __('Carrito') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('articles.index')" :active="request()->routeIs('articles.*')" wire:navigate>
+                    @auth
+                    <x-nav-link :href="route('wishlist.index')" :active="request()->routeIs('wishlist.*')" wire:navigate>
+                        {{ __('Favoritos') }}
+                    </x-nav-link>
+                    @endauth                    <x-nav-link :href="route('articles.index')" :active="request()->routeIs('articles.*')" wire:navigate>
                         {{ __('Articles') }}
                     </x-nav-link>
                     <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')" wire:navigate>

@@ -6,6 +6,9 @@ use App\Livewire\Password;
 use App\Livewire\Appearance;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\UserController;
 
 Route::view('/', 'welcome');
@@ -13,6 +16,19 @@ Route::view('/', 'welcome');
 // Catálogo de libros (público)
 Route::get('/books', [BookController::class, 'index'])->name('books.index');
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+
+// Carrito (público)
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+// Wishlist (requiere autenticación)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    Route::delete('/cart/{book}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::patch('/cart/{book}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+});
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

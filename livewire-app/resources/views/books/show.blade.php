@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                📚 {{ $book->title }}
+                {{ $book->title }}
             </h2>
             <a href="{{ route('books.index') }}" class="text-blue-600 hover:text-blue-800">
                 ← Volver al catálogo
@@ -47,17 +47,12 @@
                                     @endif
                                 </div>
 
-                                <!-- Botón Agregar al Carrito -->
-                                <button class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold mb-2 @if(!$book->isAvailable()) opacity-50 cursor-not-allowed @endif" @if(!$book->isAvailable()) disabled @endif>
-                                    🛒 Agregar al Carrito
-                                </button>
-                            @endif
+                                <!-- Carrito -->
+                                <livewire:cart-manager :book="$book" />
 
-                            <!-- Botón Wishlist -->
-                            <button class="w-full bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 transition font-semibold">
-                                ❤️ Agregar a Favoritos
-                            </button>
-                        </div>
+                                <!-- Wishlist -->
+                                <livewire:wishlist-button :book="$book" />
+                            @endif
                     </div>
                 </div>
 
@@ -127,53 +122,8 @@
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Reseñas ({{ $reviews->count() }})</h2>
 
-                    @auth
-                        <!-- Formulario para nueva reseña -->
-                        <div class="mb-8 pb-8 border-b">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                                @if($userReview)
-                                    Tu reseña
-                                @else
-                                    Escribe tu reseña
-                                @endif
-                            </h3>
-
-                            <form class="space-y-4">
-                                @csrf
-                                <!-- Rating -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Calificación:</label>
-                                    <div class="flex gap-2">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <button type="button" class="text-3xl hover:text-yellow-400 transition">★</button>
-                                        @endfor
-                                    </div>
-                                </div>
-
-                                <!-- Título -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Título de tu reseña:</label>
-                                    <input type="text" placeholder="Ej: Una obra maestra" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
-
-                                <!-- Contenido -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tu opinión:</label>
-                                    <textarea rows="4" placeholder="Comparte tu opinión sobre el libro..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                                </div>
-
-                                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition font-semibold">
-                                    Publicar Reseña
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="mb-8 pb-8 border-b">
-                            <p class="text-gray-600">
-                                <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 font-semibold">Inicia sesión</a> para escribir una reseña
-                            </p>
-                        </div>
-                    @endauth
+                    <!-- Componente Livewire para formulario de reseña -->
+                    <livewire:review-form :book="$book" />
 
                     <!-- Lista de Reseñas -->
                     <div class="space-y-6">
