@@ -24,6 +24,7 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 // Recibo en PDF (requiere autenticación)
 Route::middleware(['auth'])->group(function () {
     Route::get('/receipt/pdf', [ReceiptController::class, 'generatePDF'])->name('receipt.pdf');
+    Route::get('/order/confirmation', [ReceiptController::class, 'confirmation'])->name('order.confirmation');
 });
 
 // Wishlist (requiere autenticación)
