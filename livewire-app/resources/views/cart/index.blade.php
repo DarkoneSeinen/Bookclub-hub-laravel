@@ -99,9 +99,9 @@
                             </div>
 
                             <!-- Botones -->
-                            <button class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold mb-3">
-                                💳 Proceder al Pago
-                            </button>
+                            <a href="{{ route('receipt.pdf') }}" class="w-full block text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold mb-3">
+                                💳 Pagar
+                            </a>
 
                             <a href="{{ route('books.index') }}" class="block w-full text-center bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition font-semibold">
                                 Seguir Comprando

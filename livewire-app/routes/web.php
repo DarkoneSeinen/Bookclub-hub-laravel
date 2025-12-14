@@ -10,6 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReceiptController;
 
 Route::view('/', 'welcome');
 
@@ -19,6 +20,11 @@ Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show')
 
 // Carrito (público)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+// Recibo en PDF (requiere autenticación)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/receipt/pdf', [ReceiptController::class, 'generatePDF'])->name('receipt.pdf');
+});
 
 // Wishlist (requiere autenticación)
 Route::middleware(['auth'])->group(function () {
