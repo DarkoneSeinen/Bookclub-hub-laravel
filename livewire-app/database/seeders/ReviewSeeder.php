@@ -37,15 +37,25 @@ class ReviewSeeder extends Seeder
             return;
         }
 
-        foreach ($reviews as $review) {
-            Review::create([
-                'user_id' => $users->random()->id,
-                'book_id' => $books->random()->id,
-                'rating' => $review['rating'],
-                'title' => $review['title'],
-                'content' => $review['content'],
-                'helpful_count' => rand(0, 50),
-            ]);
+        $usersArray = $users->toArray();
+        $booksArray = $books->toArray();
+        
+        // Crear reseñas sin repetir combinación user-book
+        foreach ($reviews as $index => $review) {
+            $userId = $usersArray[$index % count($usersArray)]['id'];
+            $bookId = $booksArray[$index % count($booksArray)]['id'];
+            
+            // Verificar que no exista ya esta reseña
+            if (!\App\Models\Review::where('user_id', $userId)->where('book_id', $bookId)->exists()) {
+                Review::create([
+                    'user_id' => $userId,
+                    'book_id' => $bookId,
+                    'rating' => $review['rating'],
+                    'title' => $review['title'],
+                    'content' => $review['content'],
+                    'helpful_count' => rand(0, 50),
+                ]);
+            }
         }
 
         $this->command->info('✅ ' . count($reviews) . ' reseñas creadas exitosamente!');

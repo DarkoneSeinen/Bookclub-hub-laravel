@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Profile;
 use App\Livewire\Password;
 use App\Livewire\Appearance;
+use App\Livewire\AdminDashboard;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
@@ -54,6 +55,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('articles', ArticleController::class);
     Route::resource('users', UserController::class)->except(['show','create','store']);
+});
+
+// ======== RUTAS ADMIN ========
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', AdminDashboard::class)->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
