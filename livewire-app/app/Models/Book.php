@@ -24,6 +24,7 @@ class Book extends Model
         'genres',
         'rating_avg',
         'review_count',
+        'price',
     ];
 
     protected function casts(): array

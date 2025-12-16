@@ -5,6 +5,8 @@ use App\Livewire\Profile;
 use App\Livewire\Password;
 use App\Livewire\Appearance;
 use App\Livewire\AdminDashboard;
+use App\Livewire\Admin\BooksManager;
+use App\Livewire\Admin\OrdersManager;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
@@ -60,6 +62,8 @@ Route::middleware(['auth'])->group(function () {
 // ======== RUTAS ADMIN ========
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboard::class)->name('dashboard');
+    Route::get('/books', BooksManager::class)->name('books');
+    Route::get('/orders', OrdersManager::class)->name('orders');
 });
 
 require __DIR__.'/auth.php';
