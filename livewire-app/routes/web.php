@@ -10,6 +10,9 @@ use App\Livewire\Admin\OrdersManager;
 use App\Livewire\Clubs\ClubIndex;
 use App\Livewire\Clubs\ClubCreate;
 use App\Livewire\Clubs\ClubShow;
+use App\Livewire\Clubs\ClubSettings;
+use App\Livewire\Clubs\MembersList;
+use App\Livewire\Clubs\ReadingForm;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
@@ -48,6 +51,10 @@ Route::middleware(['auth'])->prefix('clubs')->name('clubs.')->group(function () 
     Route::get('/', ClubIndex::class)->name('index');
     Route::get('/create', ClubCreate::class)->name('create');
     Route::get('/{club}', ClubShow::class)->name('show');
+    Route::get('/{club}/settings', ClubSettings::class)->name('settings');
+    Route::get('/{club}/members', MembersList::class)->name('members');
+    Route::get('/{club}/readings/create', ReadingForm::class)->name('readings.create');
+    Route::get('/{club}/readings/{reading}/edit', ReadingForm::class)->name('readings.edit');
 });
 
 Route::view('dashboard', 'dashboard')

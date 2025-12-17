@@ -36,6 +36,7 @@ class Club extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'club_members')
+            ->using(ClubMember::class)
             ->withPivot('role', 'joined_at')
             ->withTimestamps();
     }

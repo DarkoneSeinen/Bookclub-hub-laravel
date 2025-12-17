@@ -16,6 +16,11 @@
 
                 <div>
                     @auth
+                        @if(auth()->user()->id === $club->owner_id)
+                            <a href="{{ route('clubs.settings', $club) }}" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm">
+                                ⚙️ Configurar
+                            </a>
+                        @endif
                         @if($isMember)
                             <button wire:click="leaveClub" class="px-6 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition">
                                 Abandonar Club
@@ -55,7 +60,16 @@
         <div class="lg:col-span-2">
             <!-- Current Book -->
             <div class="bg-white rounded-lg shadow p-6 mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Lecturas Actuales</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">Lecturas Actuales</h2>
+                    @auth
+                        @if(auth()->user()->id === $club->owner_id)
+                            <a href="{{ route('clubs.readings.create', $club) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                                + Nueva Lectura
+                            </a>
+                        @endif
+                    @endauth
+                </div>
 
                 @if($readings->isEmpty())
                     <p class="text-gray-500">No hay lecturas registradas</p>
@@ -86,6 +100,11 @@
                                                 @endif">
                                                 {{ ucfirst(str_replace('_', ' ', $reading->status)) }}
                                             </span>
+                                            @auth
+                                                @if(auth()->user()->id === $club->owner_id)
+                                                    <a href="{{ route('clubs.readings.edit', [$club, $reading]) }}" class="text-sm text-blue-600 hover:text-blue-700">Editar</a>
+                                                @endif
+                                            @endauth
                                         </div>
 
                                         @if($reading->start_date)
@@ -107,7 +126,14 @@
         <div>
             <!-- Members -->
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Miembros</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-900">Miembros</h2>
+                    @auth
+                        @if(auth()->user()->id === $club->owner_id)
+                            <a href="{{ route('clubs.members', $club) }}" class="text-sm text-blue-600 hover:text-blue-700">Gestionar</a>
+                        @endif
+                    @endauth
+                </div>
 
                 <div class="space-y-3 max-h-96 overflow-y-auto">
                     @foreach($members as $member)
@@ -129,7 +155,7 @@
                 </div>
 
                 @if($members->hasMorePages())
-                    <a href="#" class="mt-4 text-sm text-blue-600 hover:text-blue-700">Ver más miembros</a>
+                    <a href="{{ route('clubs.members', $club) }}" class="mt-4 text-sm text-blue-600 hover:text-blue-700">Ver todos los miembros</a>
                 @endif
             </div>
         </div>
