@@ -42,6 +42,9 @@ new class extends Component
                     <x-nav-link :href="route('wishlist.index')" :active="request()->routeIs('wishlist.*')" wire:navigate>
                         {{ __('Favoritos') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('clubs.index')" :active="request()->routeIs('clubs.*')" wire:navigate>
+                        {{ __('Clubs') }}
+                    </x-nav-link>
                     @endauth                    <x-nav-link :href="route('articles.index')" :active="request()->routeIs('articles.*')" wire:navigate>
                         {{ __('Articles') }}
                     </x-nav-link>

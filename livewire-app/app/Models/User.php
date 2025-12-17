@@ -91,4 +91,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Article::class, 'author_id');
     }
+
+    /**
+     * Get the clubs owned by this user
+     */
+    public function ownedClubs(): HasMany
+    {
+        return $this->hasMany(Club::class, 'owner_id');
+    }
+
+    /**
+     * Get the clubs this user is a member of
+     */
+    public function clubs()
+    {
+        return $this->belongsToMany(Club::class, 'club_members')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
+    }
 }

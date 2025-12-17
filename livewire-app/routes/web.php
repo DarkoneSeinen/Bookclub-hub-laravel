@@ -7,6 +7,9 @@ use App\Livewire\Appearance;
 use App\Livewire\AdminDashboard;
 use App\Livewire\Admin\BooksManager;
 use App\Livewire\Admin\OrdersManager;
+use App\Livewire\Clubs\ClubIndex;
+use App\Livewire\Clubs\ClubCreate;
+use App\Livewire\Clubs\ClubShow;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
@@ -38,6 +41,13 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/cart/{book}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+});
+
+// ======== RUTAS CLUBS ========
+Route::middleware(['auth'])->prefix('clubs')->name('clubs.')->group(function () {
+    Route::get('/', ClubIndex::class)->name('index');
+    Route::get('/create', ClubCreate::class)->name('create');
+    Route::get('/{club}', ClubShow::class)->name('show');
 });
 
 Route::view('dashboard', 'dashboard')
