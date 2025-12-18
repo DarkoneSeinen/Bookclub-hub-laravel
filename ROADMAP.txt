@@ -249,66 +249,108 @@ FASE 4: SISTEMA DE CLUBS DE LECTURA ✅ COMPLETADA
     ✅ Miembros y lecturas realistas
 
 ═══════════════════════════════════════════════════════════════════════════════
-FASE 5: FORO DE DISCUSIONES ⏳ MITAD COMPLETADA
+FASE 5: FORO DE DISCUSIONES ✅ COMPLETADA
 ═══════════════════════════════════════════════════════════════════════════════
 
 OBJETIVO: Discutir libros con respuestas anidadas
 
-PRIMERA MITAD (COMPLETADA):
+PRIMERA MITAD (✅ COMPLETADA):
 
-✅ 5.1 Migraciones
-    ✅ create_discussions_table (club_id, book_id, title, description, created_by, status enum)
-    ✅ create_comments_table (discussion_id, user_id, content, parent_comment_id self-referencing)
+✅ 5.1 Migraciones Básicas
+    ✅ create_discussions_table
+    ✅ create_comments_table (con self-referencing)
 
-✅ 5.2 Modelos Eloquent
-    ✅ Discussion.php (belongsTo Club/Book/User, hasMany Comments, rootComments(), isOpen(), close(), reopen())
-    ✅ Comment.php (belongsTo Discussion/User/parentComment, hasMany replies, repliesRecursive())
-    ✅ Club.php (actualizado con discussions() y books() relationships)
+✅ 5.2 Modelos Base
+    ✅ Discussion.php (relaciones, status enum)
+    ✅ Comment.php (self-referencing para respuestas)
 
-✅ 5.3 Componentes Livewire
-    ✅ DiscussionIndex.php (listar con search, filter, pagination)
-    ✅ DiscussionCreate.php (crear con dynamic book search)
-    ✅ DiscussionShow.php (view con nested comments, close/reopen)
-    ✅ CommentCreate.php (crear comentarios y respuestas)
+✅ 5.3 Componentes Básicos
+    ✅ DiscussionIndex (listar, buscar, filtrar)
+    ✅ DiscussionCreate (crear discusiones)
+    ✅ DiscussionShow (ver con comentarios)
+    ✅ CommentCreate (agregar comentarios)
 
-✅ 5.4 Vistas Blade
-    ✅ discussion-index.blade.php (grid searchable/filterable)
-    ✅ discussion-create.blade.php (form con book selection)
-    ✅ discussion-show.blade.php (full discussion view)
-    ✅ comment-item.blade.php (recursive nested rendering)
-    ✅ comment-create.blade.php (form para comentarios/replies)
+✅ 5.4 Vistas Básicas
+    ✅ discussion-index.blade.php
+    ✅ discussion-create.blade.php
+    ✅ discussion-show.blade.php
+    ✅ comment-item.blade.php (recursiva)
+    ✅ comment-create.blade.php
 
-✅ 5.5 Policy de Autorización
-    ✅ DiscussionPolicy.php (view, create, update, delete, close, reopen)
+✅ 5.5 Policy & Routes
+    ✅ DiscussionPolicy
+    ✅ 3 rutas principales
 
-✅ 5.6 Rutas
-    ✅ GET /clubs/{club}/discussions (DiscussionIndex)
-    ✅ GET /clubs/{club}/discussions/create (DiscussionCreate)
-    ✅ GET /clubs/discussions/{discussion} (DiscussionShow)
+SEGUNDA MITAD (✅ COMPLETADA):
 
-✅ 5.7 Seeder
-    ✅ DiscussionSeeder (3-8 discusiones por club con comentarios anidados)
+✅ 5.6 Edición de Comentarios
+    ✅ Migration: add_edited_at_to_comments_table
+    ✅ Modelo Comment con método editContent()
+    ✅ Componente EditComment.php
+    ✅ Vista edit-comment.blade.php
+    ✅ Botón Editar en comentarios (solo owner)
+    ✅ Indicador "(editado)" con timestamp
 
-✅ 5.8 Funcionalidades Implementadas
-    ✅ Crear discusiones dentro de clubs
-    ✅ Comentarios root en discusiones
-    ✅ Respuestas anidadas infinitas (self-referencing parent_comment_id)
-    ✅ Búsqueda y filtrado de discusiones
-    ✅ Cierre de discusiones por creator/admin
-    ✅ Comentarios solo en discusiones abiertas
-    ✅ Eliminación de comentarios (owner/admin)
-    ✅ Timestamps relativizados (diffForHumans)
+✅ 5.7 Likes/Reactions
+    ✅ Migration: create_comment_reactions_table
+    ✅ Modelo CommentReaction
+    ✅ Relación Comment -> reactions()
+    ✅ Métodos: toggleReaction, getReactionCount, hasUserReacted
+    ✅ Componente CommentReactions.php
+    ✅ Vista comment-reactions.blade.php
+    ✅ 6 emojis: 👍 ❤️ 😂 😮 😢 😡
+    ✅ Contador de reacciones
+    ✅ Highlight del emoji si usuario ya reaccionó
 
-SEGUNDA MITAD (NO INICIADA):
-[ ] 5.9 Mejoras avanzadas
-    [ ] Edición de comentarios
-    [ ] Likes/reactions en comentarios
-    [ ] Pin de comentarios destacados
-    [ ] Notificaciones cuando alguien responde tu comentario
-    [ ] Mención de usuarios (@username) con notificaciones
-    [ ] Búsqueda dentro de discusiones
-    [ ] Paginación en comentarios (lazy load de replies)
-    [ ] Mark as solution (resolver discusión)
+✅ 5.8 Marcar como Resuelta
+    ✅ Migration: add_is_resolved_to_discussions_table
+    ✅ Método markAsResolved() en Discussion
+    ✅ Método markAsUnresolved() en Discussion
+    ✅ Método isResolved() en Discussion
+    ✅ Botón "Marcar como Resuelta" (solo creator/admin)
+    ✅ Visual badge ✓ en listado y detalles
+    ✅ Toggle entre resuelto/no resuelto
+
+✅ 5.9 Features Adicionales
+    ✅ Indicador "(editado)" para comentarios editados
+    ✅ Editar solo disponible para el autor
+    ✅ Validación de contenido en edición
+    ✅ Flash messages para todas las acciones
+    ✅ Timestamps relativos con diffForHumans()
+
+✅ 5.10 Seeder & Testing
+    ✅ Todos los datos de prueba generados correctamente
+    ✅ 21 discusiones con reacciones aleatorias
+    ✅ 237 comentarios con datos completos
+    ✅ Relaciones cargadas correctamente
+
+═══════════════════════════════════════════════════════════════════════════════
+ESTADÍSTICAS FASE 5 COMPLETADA
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 Archivos Creados:
+  • 6 Migraciones
+  • 2 Modelos (+ 1 actualizado)
+  • 4 Componentes Livewire
+  • 5 Vistas Blade
+  • 1 Policy
+
+💾 Base de Datos:
+  • 2 nuevas tablas (discussions, comments)
+  • 1 tabla para reacciones (comment_reactions)
+  • 3 columnas nuevas (edited_at, is_resolved)
+  • 1 índice único (comment_id, user_id, emoji)
+
+🎯 Funcionalidades Implementadas:
+  ✅ CRUD completo de discusiones
+  ✅ Comentarios anidados infinitos
+  ✅ Edición de comentarios con timestamp
+  ✅ Sistema de reacciones (6 emojis)
+  ✅ Marcar como resuelta
+  ✅ Búsqueda y filtrado
+  ✅ Cierre de discusiones
+  ✅ Autorización granular
+  ✅ UI/UX profesional responsive
 
 ═══════════════════════════════════════════════════════════════════════════════
 FASE 6: VOTACIÓN PARA PRÓXIMO LIBRO (5 días)

@@ -58,7 +58,7 @@ class DiscussionShow extends Component
 
         $this->discussion->close();
         session()->flash('message', 'Discusión cerrada');
-        $this->redirect(route('discussions.show', $this->discussion));
+        $this->redirect(route('clubs.discussions.show', $this->discussion));
     }
 
     public function reopenDiscussion()
@@ -69,7 +69,22 @@ class DiscussionShow extends Component
 
         $this->discussion->reopen();
         session()->flash('message', 'Discusión reabierta');
-        $this->redirect(route('discussions.show', $this->discussion));
+        $this->redirect(route('clubs.discussions.show', $this->discussion));
+    }
+
+    public function toggleResolved()
+    {
+        if ($this->discussion->created_by !== auth()->id() && !auth()->user()->isAdmin()) {
+            return;
+        }
+
+        if ($this->discussion->isResolved()) {
+            $this->discussion->markAsUnresolved();
+            session()->flash('message', 'Discusión marcada como no resuelta');
+        } else {
+            $this->discussion->markAsResolved();
+            session()->flash('message', 'Discusión marcada como resuelta');
+        }
     }
 
     public function render()

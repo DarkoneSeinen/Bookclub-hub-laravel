@@ -15,8 +15,12 @@ class Discussion extends Model
         'description',
         'created_by',
         'status',
+        'is_resolved',
     ];
 
+    protected $casts = [
+        'is_resolved' => 'boolean',
+    ];
     /**
      * Get the club this discussion belongs to
      */
@@ -79,5 +83,29 @@ class Discussion extends Model
     public function reopen(): void
     {
         $this->update(['status' => 'activa']);
+    }
+
+    /**
+     * Mark as resolved
+     */
+    public function markAsResolved(): void
+    {
+        $this->update(['is_resolved' => true]);
+    }
+
+    /**
+     * Mark as unresolved
+     */
+    public function markAsUnresolved(): void
+    {
+        $this->update(['is_resolved' => false]);
+    }
+
+    /**
+     * Check if discussion is resolved
+     */
+    public function isResolved(): bool
+    {
+        return (bool) $this->is_resolved;
     }
 }

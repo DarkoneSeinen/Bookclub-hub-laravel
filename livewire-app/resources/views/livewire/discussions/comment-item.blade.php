@@ -11,20 +11,34 @@
             <div>
                 <p class="font-medium text-gray-900">{{ $comment->user->name }}</p>
                 <p class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
+                @if($comment->edited_at)
+                    <p class="text-xs text-gray-400">(editado)</p>
+                @endif
             </div>
         </div>
 
         @auth
             @if(auth()->user()->id === $comment->user_id || auth()->user()->isAdmin())
-                <button wire:click="deleteComment({{ $comment->id }})" wire:confirm="¿Eliminar este comentario?"
-                        class="text-red-600 hover:text-red-700 text-sm">
-                    Eliminar
-                </button>
+                <div class="flex gap-2">
+                    @if(auth()->user()->id === $comment->user_id)
+                        <button wire:click="$dispatch('edit-comment', { id: {{ $comment->id }} })"
+                                class="text-blue-600 hover:text-blue-700 text-sm">
+                            Editar
+                        </button>
+                    @endif
+                    <button wire:click="deleteComment({{ $comment->id }})" wire:confirm="¿Eliminar este comentario?"
+                            class="text-red-600 hover:text-red-700 text-sm">
+                        Eliminar
+                    </button>
+                </div>
             @endif
         @endauth
     </div>
 
     <p class="text-gray-700 mb-3">{{ $comment->content }}</p>
+
+    <!-- Reactions -->
+    <livewire:discussions.comment-reactions :comment="$comment" lazy />
 
     <!-- Replies -->
     @if($comment->replies->isNotEmpty())

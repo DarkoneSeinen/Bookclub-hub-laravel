@@ -34,10 +34,22 @@
                 @foreach($discussions as $discussion)
                     <a href="{{ route('clubs.discussions.show', $discussion) }}" class="block bg-white rounded-lg shadow hover:shadow-lg transition p-6 border-l-4 @if($discussion->status === 'cerrada') border-red-500 @else border-green-500 @endif">
                         <div class="flex justify-between items-start mb-2">
-                            <h2 class="text-xl font-bold text-gray-900">{{ $discussion->title }}</h2>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium @if($discussion->status === 'cerrada') bg-red-100 text-red-800 @else bg-green-100 text-green-800 @endif">
-                                {{ ucfirst($discussion->status) }}
-                            </span>
+                            <div class="flex-1">
+                                <h2 class="text-xl font-bold text-gray-900">{{ $discussion->title }}</h2>
+                                @if($discussion->isResolved())
+                                    <span class="text-xs text-green-700 font-semibold">✓ Resuelta</span>
+                                @endif
+                            </div>
+                            <div class="flex gap-2">
+                                @if($discussion->isResolved())
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        ✓ Resuelto
+                                    </span>
+                                @endif
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium @if($discussion->status === 'cerrada') bg-red-100 text-red-800 @else bg-green-100 text-green-800 @endif">
+                                    {{ ucfirst($discussion->status) }}
+                                </span>
+                            </div>
                         </div>
 
                         @if($discussion->description)
