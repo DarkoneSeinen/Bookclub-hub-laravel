@@ -120,6 +120,20 @@
                     </div>
                 @endif
             </div>
+
+            <!-- Discusiones Section -->
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">💬 Discusiones</h2>
+                    @auth
+                        <a href="{{ route('clubs.discussions.index', $club) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                            Ver Foro →
+                        </a>
+                    @endauth
+                </div>
+                <p class="text-gray-600 mb-4">{{ $club->discussions()->count() }} discusiones activas en este club</p>
+                <p class="text-sm text-gray-500">Participa en discusiones, comparte opiniones y conecta con otros miembros del club.</p>
+            </div>
         </div>
 
         <!-- Sidebar -->

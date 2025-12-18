@@ -13,6 +13,9 @@ use App\Livewire\Clubs\ClubShow;
 use App\Livewire\Clubs\ClubSettings;
 use App\Livewire\Clubs\MembersList;
 use App\Livewire\Clubs\ReadingForm;
+use App\Livewire\Discussions\DiscussionIndex;
+use App\Livewire\Discussions\DiscussionCreate;
+use App\Livewire\Discussions\DiscussionShow;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
@@ -55,6 +58,11 @@ Route::middleware(['auth'])->prefix('clubs')->name('clubs.')->group(function () 
     Route::get('/{club}/members', MembersList::class)->name('members');
     Route::get('/{club}/readings/create', ReadingForm::class)->name('readings.create');
     Route::get('/{club}/readings/{reading}/edit', ReadingForm::class)->name('readings.edit');
+    
+    // Discusiones del club
+    Route::get('/{club}/discussions', DiscussionIndex::class)->name('discussions.index');
+    Route::get('/{club}/discussions/create', DiscussionCreate::class)->name('discussions.create');
+    Route::get('/discussions/{discussion}', DiscussionShow::class)->name('discussions.show');
 });
 
 Route::view('dashboard', 'dashboard')

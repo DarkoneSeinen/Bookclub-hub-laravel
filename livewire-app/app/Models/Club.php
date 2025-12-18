@@ -50,6 +50,24 @@ class Club extends Model
     }
 
     /**
+     * Get all discussions in this club
+     */
+    public function discussions(): HasMany
+    {
+        return $this->hasMany(Discussion::class);
+    }
+
+    /**
+     * Get all books in this club (through readings)
+     */
+    public function books(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'readings', 'club_id', 'book_id')
+            ->withPivot('status', 'start_date', 'end_date')
+            ->withTimestamps();
+    }
+
+    /**
      * Check if a user is a member of this club
      */
     public function isMember(User $user): bool

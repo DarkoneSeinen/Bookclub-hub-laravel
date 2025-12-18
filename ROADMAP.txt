@@ -249,39 +249,66 @@ FASE 4: SISTEMA DE CLUBS DE LECTURA ✅ COMPLETADA
     ✅ Miembros y lecturas realistas
 
 ═══════════════════════════════════════════════════════════════════════════════
-FASE 5: FORO DE DISCUSIONES (3-4 días)
+FASE 5: FORO DE DISCUSIONES ⏳ MITAD COMPLETADA
 ═══════════════════════════════════════════════════════════════════════════════
 
 OBJETIVO: Discutir libros con respuestas anidadas
 
-[ ] 5.1 Crear migraciones
-    ├── create_discussions_table
-    └── create_comments_table
+PRIMERA MITAD (COMPLETADA):
 
-[ ] 5.2 Crear modelos
-    ├── Discussion.php
-    └── Comment.php (con self-referencing para replies)
+✅ 5.1 Migraciones
+    ✅ create_discussions_table (club_id, book_id, title, description, created_by, status enum)
+    ✅ create_comments_table (discussion_id, user_id, content, parent_comment_id self-referencing)
 
-[ ] 5.3 Vistas
-    ├── discussions/index.blade.php (listado por club)
-    ├── discussions/show.blade.php (hilo de discusión)
-    └── discussions/create.blade.php (crear discusión)
+✅ 5.2 Modelos Eloquent
+    ✅ Discussion.php (belongsTo Club/Book/User, hasMany Comments, rootComments(), isOpen(), close(), reopen())
+    ✅ Comment.php (belongsTo Discussion/User/parentComment, hasMany replies, repliesRecursive())
+    ✅ Club.php (actualizado con discussions() y books() relationships)
 
-[ ] 5.4 Componentes Livewire
-    ├── DiscussionCreate.php (crear tema)
-    ├── DiscussionList.php (listar discusiones)
-    ├── CommentThread.php (árbol de comentarios)
-    ├── CommentForm.php (escribir comentario)
-    └── CommentReply.php (responder)
+✅ 5.3 Componentes Livewire
+    ✅ DiscussionIndex.php (listar con search, filter, pagination)
+    ✅ DiscussionCreate.php (crear con dynamic book search)
+    ✅ DiscussionShow.php (view con nested comments, close/reopen)
+    ✅ CommentCreate.php (crear comentarios y respuestas)
 
-[ ] 5.5 Controladores
-    ├── DiscussionController.php (CRUD)
-    └── CommentController.php (crear, eliminar)
+✅ 5.4 Vistas Blade
+    ✅ discussion-index.blade.php (grid searchable/filterable)
+    ✅ discussion-create.blade.php (form con book selection)
+    ✅ discussion-show.blade.php (full discussion view)
+    ✅ comment-item.blade.php (recursive nested rendering)
+    ✅ comment-create.blade.php (form para comentarios/replies)
 
-[ ] 5.6 Validaciones
-    ├── Solo miembros del club pueden comentar
-    ├── No permitir comentarios en discusiones cerradas
-    └── Validar que no sea spam
+✅ 5.5 Policy de Autorización
+    ✅ DiscussionPolicy.php (view, create, update, delete, close, reopen)
+
+✅ 5.6 Rutas
+    ✅ GET /clubs/{club}/discussions (DiscussionIndex)
+    ✅ GET /clubs/{club}/discussions/create (DiscussionCreate)
+    ✅ GET /clubs/discussions/{discussion} (DiscussionShow)
+
+✅ 5.7 Seeder
+    ✅ DiscussionSeeder (3-8 discusiones por club con comentarios anidados)
+
+✅ 5.8 Funcionalidades Implementadas
+    ✅ Crear discusiones dentro de clubs
+    ✅ Comentarios root en discusiones
+    ✅ Respuestas anidadas infinitas (self-referencing parent_comment_id)
+    ✅ Búsqueda y filtrado de discusiones
+    ✅ Cierre de discusiones por creator/admin
+    ✅ Comentarios solo en discusiones abiertas
+    ✅ Eliminación de comentarios (owner/admin)
+    ✅ Timestamps relativizados (diffForHumans)
+
+SEGUNDA MITAD (NO INICIADA):
+[ ] 5.9 Mejoras avanzadas
+    [ ] Edición de comentarios
+    [ ] Likes/reactions en comentarios
+    [ ] Pin de comentarios destacados
+    [ ] Notificaciones cuando alguien responde tu comentario
+    [ ] Mención de usuarios (@username) con notificaciones
+    [ ] Búsqueda dentro de discusiones
+    [ ] Paginación en comentarios (lazy load de replies)
+    [ ] Mark as solution (resolver discusión)
 
 ═══════════════════════════════════════════════════════════════════════════════
 FASE 6: VOTACIÓN PARA PRÓXIMO LIBRO (5 días)
