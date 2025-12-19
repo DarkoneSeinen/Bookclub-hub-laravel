@@ -1,4 +1,34 @@
 <div class="max-w-6xl mx-auto py-8 px-4">
+    @if($noVotingPeriods)
+        <!-- No Voting Periods Message -->
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <div class="mb-6">
+                <div class="text-6xl mb-4">🗳️</div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">No hay votaciones activas</h1>
+                <p class="text-gray-600 mb-6">Este club aún no ha iniciado ninguna votación para elegir el próximo libro.</p>
+            </div>
+
+            @auth
+                @if(auth()->user()->id === $club->owner_id || auth()->user()->isAdmin())
+                    <a href="{{ route('clubs.voting.create', $club) }}" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                        + Iniciar Primera Votación
+                    </a>
+                @else
+                    <p class="text-gray-500">Contáctate con el administrador del club para iniciar una votación.</p>
+                @endif
+            @else
+                <a href="{{ route('login') }}" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                    Inicia Sesión
+                </a>
+            @endauth
+
+            <div class="mt-8 border-t pt-8">
+                <a href="{{ route('clubs.show', $club) }}" class="text-blue-600 hover:text-blue-700">
+                    ← Volver al club
+                </a>
+            </div>
+        </div>
+    @else
     <!-- Flash Messages -->
     @if(session('message'))
         <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
@@ -179,4 +209,5 @@
             @endauth
         </div>
     </div>
+    @endif
 </div>

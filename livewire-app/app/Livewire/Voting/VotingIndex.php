@@ -11,8 +11,9 @@ use Livewire\Attributes\Layout;
 #[Layout('components.layouts.app')]
 class VotingIndex extends Component
 {
-    public VotingPeriod $votingPeriod;
+    public ?VotingPeriod $votingPeriod = null;
     public ?Club $club = null;
+    public bool $noVotingPeriods = false;
     public string $searchBooks = '';
     public array $selectedBooks = [];
 
@@ -25,12 +26,21 @@ class VotingIndex extends Component
             $this->votingPeriod = $votingPeriod;
         } else {
             // Si no, buscar el período activo o el más reciente
-            $this->votingPeriod = $club->votingPeriods()
+            $period = $club->votingPeriods()
                 ->where('status', 'activa')
                 ->latest()
-                ->firstOr(function () use ($club) {
-                    return $club->votingPeriods()->latest()->firstOrFail();
-                });
+                ->first();
+            
+            if (!$period) {
+                $period = $club->votingPeriods()->latest()->first();
+            }
+
+            if (!$period) {
+                // No hay votaciones, marcar flag para mostrar vista especial
+                $this->noVotingPeriods = true;
+            } else {
+                $this->votingPeriod = $period;
+            }
         }
     }
 
@@ -111,6 +121,15 @@ class VotingIndex extends Component
 
     public function render()
     {
+        if ($this->noVotingPeriods || !$this->votingPeriod) {
+            return view('livewire.voting.voting-index', [
+                'candidates' => [],
+                'userVote' => null,
+                'books' => [],
+                'club' => $this->club,
+            ]);
+        }
+
         $candidates = $this->votingPeriod->getCandidates();
         $userVote = auth()->check() ? $this->votingPeriod->getUserVote(auth()->id()) : null;
         $books = $this->getBooks();
