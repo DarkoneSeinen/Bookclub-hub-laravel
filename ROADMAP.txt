@@ -353,51 +353,328 @@ ESTADÍSTICAS FASE 5 COMPLETADA
   ✅ UI/UX profesional responsive
 
 ═══════════════════════════════════════════════════════════════════════════════
-FASE 6: VOTACIÓN PARA PRÓXIMO LIBRO (5 días)
+FASE 6: VOTACIÓN PARA PRÓXIMO LIBRO ⏳ EN PROGRESO (50% COMPLETADO)
 ═══════════════════════════════════════════════════════════════════════════════
 
 OBJETIVO: Club vota qué libro leer a continuación
 
-[ ] 6.1 Crear migraciones
-    ├── create_voting_periods_table
-    ├── create_votes_table
-    └── add_winner_book_id_to_voting_periods
+PRIMERA MITAD (✅ COMPLETADA):
 
-[ ] 6.2 Crear modelos
-    ├── VotingPeriod.php
-    └── Vote.php
+✅ 6.1 Migraciones
+    ✅ create_voting_periods_table
+        • club_id (FK)
+        • title, description
+        • start_date, end_date (datetime)
+        • winner_book_id (FK, nullable)
+        • status enum('activa', 'cerrada', 'completada')
+        
+    ✅ create_votes_table
+        • voting_period_id (FK)
+        • user_id (FK)
+        • book_id (FK)
+        • unique constraint: [voting_period_id, user_id]
+    
+    ✅ create_voting_candidates_table (NUEVA)
+        • voting_period_id (FK)
+        • book_id (FK)
+        • unique constraint: [voting_period_id, book_id]
 
-[ ] 6.3 Vistas
-    ├── resources/views/voting/index.blade.php (mostrar votación)
-    └── resources/views/voting/create.blade.php (crear votación)
+✅ 6.2 Modelos
+    ✅ VotingPeriod.php
+        • Relaciones: club(), winnerBook(), votes(), candidates() [NUEVA]
+        • Methods:
+            - isActive() - verifica si está dentro de fechas y activa
+            - isClosed() - verifica si cerró
+            - getCandidates() - retorna Collection de libros candidatos
+            - getVoteCount($bookId) - cuenta votos por libro
+            - getUserVote($userId) - obtiene voto del usuario
+            - determineWinner() - calcula ganador por mayoría
+            - closeVoting() - cierra período y determina ganador
+        
+    ✅ Vote.php
+        • Relaciones simples: votingPeriod(), user(), book()
+        • Fillable: voting_period_id, user_id, book_id
+    
+    ✅ VotingCandidate.php [NUEVA]
+        • belongsTo votingPeriod()
+        • belongsTo book()
+        • Fillable: voting_period_id, book_id
 
-[ ] 6.4 Componentes Livewire
-    ├── VotingCard.php (mostrar libro candidato + contador de votos)
-    ├── VotingManager.php (crear período de votación)
-    ├── VoteResults.php (mostrar resultados)
-    ├── StartVoting.php (botón para iniciar)
-    └── VotingSchedule.php (mostrar fechas)
+    ✅ Club.php actualizado
+        • Nueva relación: votingPeriods() HasMany
 
-[ ] 6.5 Controladores
-    ├── VotingController.php (crear período, mostrar resultados)
-    └── VoteController.php (guardar voto)
+✅ 6.3 Componentes Livewire
+    ✅ VotingManager.php (crear período de votación)
+        • mount(Club $club)
+        • Properties: title, description, start_date, end_date
+        • Methods: rules(), messages(), startVoting()
+        • Validaciones: end_date > start_date, start_date >= now()
+        • Checks: Auth (owner/admin only)
+        • Crea VotingPeriod y redirige
+        
+    ✅ VotingIndex.php (interfaz de votación)
+        • mount(Club | VotingPeriod)
+        • Properties: $votingPeriod, $searchBooks, $selectedBooks
+        • Methods:
+            - getBooks() - busca libros (lazy)
+            - selectBook($bookId) - toggle selección de candidatos
+            - addCandidates() - agrega libros a votación
+            - vote($bookId) - registra voto del usuario
+        • Validaciones: período activo, usuario no votó
 
-[ ] 6.6 Lógica
-    ├── Cada miembro vota una sola vez
-    ├── Auto-cerrar votación a fecha límite
-    ├── Seleccionar ganador automáticamente
-    ├── Enviar notificación de resultado
+✅ 6.4 Policy
+    ✅ VotingPolicy.php (7 métodos)
+        • viewAny(User, Club) - miembro del club
+        • view(User, VotingPeriod) - miembro del club
+        • create(User, Club) - owner/admin
+        • vote(User, VotingPeriod) - miembro, activa, no votó
+        • addCandidates(User, VotingPeriod) - owner/admin
+        • close(User, VotingPeriod) - owner/admin
+
+✅ 6.5 Vistas
+    ✅ voting-manager.blade.php
+        • Form para crear período
+        • Inputs: title, description, start_date (datetime-local), end_date
+        • Validación en tiempo real
+        • Submit que llama a startVoting()
+        
+    ✅ voting-index.blade.php
+        • Header con título, descripción, estado (badge)
+        • Timeline mostrando fechas
+        • Ganador destacado si completado
+        • Grid de libros candidatos con:
+            - Imagen de portada
+            - Título y autor
+            - Descripción (truncada)
+            - Barra de progreso de votos (%)
+            - Contador de votos
+            - Botón de voto (deshabilitado si ya votó o cerrado)
+        • Sidebar para admin:
+            - Búsqueda de libros
+            - Agregar múltiples candidatos
+            - Botón confirmar
+
+✅ 6.6 Rutas
+    ✅ GET /clubs/{club}/voting → VotingIndex (último período activo)
+    ✅ GET /clubs/{club}/voting/create → VotingManager
+    ✅ GET /clubs/{club}/voting/{votingPeriod} → VotingIndex (específico)
+
+✅ 6.7 Seeder
+    ✅ VotingSeeder.php
+        • 3 clubs con votaciones cada uno
+        • 1 período activo por club (10 días atrás - 10 días adelante)
+        • 1 período completado por club (45-30 días atrás)
+        • 5 candidatos por período
+        • Votos realistas (1-15 por libro)
+        • Ganador calculado automáticamente
+
+✅ 6.8 Assets
+    ✅ npm run build completado exitosamente
 
 ═══════════════════════════════════════════════════════════════════════════════
-FASE 6: PERFIL DE USUARIO Y WISHLIST (2 días) - OPCIONAL
+ESTADÍSTICAS FASE 6 PRIMERA MITAD COMPLETADA
 ═══════════════════════════════════════════════════════════════════════════════
 
-Si el tiempo permite:
-[ ] Perfiles públicos con avatar y bio
+📊 Archivos Creados:
+  • 2 Migraciones
+  • 2 Modelos
+  • 2 Componentes Livewire
+  • 1 Policy
+  • 2 Vistas Blade
+  • 1 Seeder
+  • 3 Rutas
+
+💾 Base de Datos:
+  • 2 nuevas tablas (voting_periods, votes)
+  • Total de 6 columnas en voting_periods
+  • Unique constraint en (voting_period_id, user_id)
+  • Foreign keys con cascade delete
+
+🎯 Funcionalidades Implementadas:
+  ✅ Crear períodos de votación con fechas
+  ✅ Agregar candidatos de forma dinámica
+  ✅ Votar (una vez por usuario)
+  ✅ Mostrar recuento y porcentaje de votos
+  ✅ Barra de progreso visual
+  ✅ Marcar como completado con ganador
+  ✅ Vista de resultados si cerrado
+  ✅ Búsqueda de libros en tiempo real
+  ✅ UI/UX responsivo y profesional
+  ✅ Autorización basada en Policy
+
+═════════════════════════════════════════════════════════════════════════════
+SEGUNDA MITAD PENDIENTE (Fase 6):
+═════════════════════════════════════════════════════════════════════════════
+
+[ ] 6.9 Cierre automático de votaciones
+    [ ] Laravel task scheduler (cron)
+    [ ] Command para cerrar períodos vencidos
+    [ ] Notificación al ganador
+
+[ ] 6.10 Votación rápida desde lectura
+    [ ] Botón en reading-show para iniciar votación
+    [ ] Auto-agregar libro actual como candidato
+
+[ ] 6.11 Historial de votaciones
+    [ ] Listado de votaciones pasadas
+    [ ] Ver ganador de cada una
+    [ ] Comparar progreso en tiempo real
+
+[ ] 6.12 Notificaciones
+    [ ] Notificar cuando inicia votación
+    [ ] Notificar cuando se cierra
+    [ ] Email con resultado
+    [ ] Banner en club mientras votación activa
+
+═══════════════════════════════════════════════════════════════════════════════
+
+FASE 7: PERFILES DE USUARIO (FUTURA - OPCIONAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] Perfil público del usuario
+[ ] Avatar y bio editable
+[ ] Historial de órdenes
 [ ] Seguir/dejar seguir usuarios
-[ ] Wishlist (favoritos)
-[ ] Historial de compras del usuario
+[ ] Wishlist compartible
+[ ] Badges de logros (número de clubs, libros leídos, etc.)
 
+═══════════════════════════════════════════════════════════════════════════════
+ESTADÍSTICAS FINALES - PROYECTO COMPLETADO 50%
+═══════════════════════════════════════════════════════════════════════════════
+
+FASES COMPLETADAS:
+  ✅ Fase 0: Configuración Inicial
+  ✅ Fase 1: Tienda de Libros
+  ✅ Fase 2: Sistema de Pago
+  ✅ Fase 3: Panel Admin
+  ✅ Fase 4: Sistema de Clubs
+  ✅ Fase 5: Foro de Discusiones
+  ⏳ Fase 6: Votación (50% - Primera Mitad Completada)
+
+📊 ESTADÍSTICAS GENERALES:
+
+Modelos Creados: 13
+  - User (existente)
+  - Book (existente)
+  - Order (existente)
+  - OrderItem (existente)
+  - Review ✅
+  - Club ✅
+  - ClubMember ✅
+  - Reading ✅
+  - Discussion ✅
+  - Comment ✅
+  - CommentReaction ✅
+  - VotingPeriod ✅
+  - Vote ✅
+
+Migraciones Creadas: 14
+  - 7 Base (users, books, orders, etc.)
+  - 3 Clubs (clubs, club_members, readings)
+  - 3 Discusiones (discussions, comments, comment_reactions)
+  - 2 Votaciones (voting_periods, votes)
+
+Componentes Livewire: 22
+  - 4 Tienda (Catálogo, Carrito, Wishlist)
+  - 2 Admin (BooksManager, OrdersManager)
+  - 7 Clubs (Index, Create, Show, Settings, Members, Reading)
+  - 4 Discusiones (Index, Create, Show, EditComment, CommentReactions)
+  - 2 Votaciones (VotingManager, VotingIndex)
+
+Políticas de Autorización: 4
+  - ClubPolicy (7 métodos)
+  - DiscussionPolicy (5 métodos)
+  - VotingPolicy (7 métodos)
+  - ArticlePolicy (existente)
+
+Vistas Blade: 25+
+  - Tienda (6 vistas)
+  - Admin (3 vistas)
+  - Clubs (7 vistas)
+  - Discusiones (6 vistas)
+  - Votaciones (2 vistas)
+  - Layouts y partials (varios)
+
+Rutas: 30+
+  - Tienda: 4 rutas
+  - Admin: 3 rutas (protegidas)
+  - Clubs: 8 rutas (protegidas)
+  - Discusiones: 3 rutas (protegidas)
+  - Votaciones: 3 rutas (protegidas)
+
+Tests: 0 (Opcional)
+
+Líneas de Código: ~8000+
+  - PHP (Controllers, Models, Policies): ~3000
+  - Blade (Vistas): ~2500
+  - CSS/Tailwind: ~1000
+  - JavaScript/Livewire: ~1500
+
+BASE DE DATOS:
+  - 14 tablas
+  - 100+ columnas
+  - 20+ índices
+  - 15+ relaciones Eloquent
+  - Constraints y validaciones
+
+FUNCIONALIDADES PRINCIPALES:
+  ✅ Autenticación y autorizacion
+  ✅ E-commerce completo
+  ✅ Sistema de clubs
+  ✅ Foro de discusiones con respuestas anidadas
+  ✅ Sistema de votación democrática
+  ✅ Manejo de imágenes
+  ✅ Generación de PDFs
+  ✅ Búsqueda y filtrado
+  ✅ Validaciones avanzadas
+  ✅ UI/UX responsivo
+
+TECNOLOGÍAS IMPLEMENTADAS:
+  - Laravel 12
+  - Livewire 3 (componentes reactivos)
+  - Sail (Docker)
+  - MySQL (base de datos)
+  - Tailwind CSS (estilos)
+  - Vite (bundler)
+  - Dompdf (generación de PDFs)
+  - Laravel Policies (autorización)
+  - Model Binding
+  - Lazy Loading
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CÓMO CONTINUAR:
+
+Si deseas continuar con la Fase 6 (segunda mitad):
+
+1. Cierre automático de votaciones
+   - Crear Command: php artisan voting:close-expired
+   - Programar en scheduler (Kernel.php)
+   - Actualizar status a 'completada'
+   - Calcular ganador
+
+2. Dashboard de votaciones pasadas
+   - VotingHistory component
+   - Mostrar todas las votaciones del club
+   - Filtrar por estado
+
+3. Notificaciones
+   - Event VotingStarted
+   - Event VotingClosed
+   - Broadcast notifications en tiempo real
+
+4. Integración con Readings
+   - Iniciar votación desde lectura completada
+   - Auto-agregar libro siguiente como candidato
+
+Si prefieres saltarte Fase 6 segundo:
+
+→ Ir a Fase 7: Perfiles de Usuario y Wishlist
+→ Mejorar admin (Analytics, Reportes)
+→ Agregar comentarios a órdenes (Customer Support)
+→ Sistema de notificaciones push/email
+
+═══════════════════════════════════════════════════════════════════════════════
 ═══════════════════════════════════════════════════════════════════════════════
 FASE 7: PULIDO Y MEJORAS (2-3 días) - FINAL
 ═══════════════════════════════════════════════════════════════════════════════

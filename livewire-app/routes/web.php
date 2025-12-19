@@ -16,6 +16,8 @@ use App\Livewire\Clubs\ReadingForm;
 use App\Livewire\Discussions\DiscussionIndex;
 use App\Livewire\Discussions\DiscussionCreate;
 use App\Livewire\Discussions\DiscussionShow;
+use App\Livewire\Voting\VotingManager;
+use App\Livewire\Voting\VotingIndex;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
@@ -63,6 +65,11 @@ Route::middleware(['auth'])->prefix('clubs')->name('clubs.')->group(function () 
     Route::get('/{club}/discussions', DiscussionIndex::class)->name('discussions.index');
     Route::get('/{club}/discussions/create', DiscussionCreate::class)->name('discussions.create');
     Route::get('/discussions/{discussion}', DiscussionShow::class)->name('discussions.show');
+    
+    // Votaciones del club
+    Route::get('/{club}/voting', VotingIndex::class)->name('voting.index');
+    Route::get('/{club}/voting/create', VotingManager::class)->name('voting.create');
+    Route::get('/{club}/voting/{votingPeriod}', VotingIndex::class)->name('voting.show');
 });
 
 Route::view('dashboard', 'dashboard')

@@ -134,6 +134,26 @@
                 <p class="text-gray-600 mb-4">{{ $club->discussions()->count() }} discusiones activas en este club</p>
                 <p class="text-sm text-gray-500">Participa en discusiones, comparte opiniones y conecta con otros miembros del club.</p>
             </div>
+
+            <!-- Votación Section -->
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">🗳️ Votación Próximo Libro</h2>
+                    @auth
+                        @if(auth()->user()->id === $club->owner_id)
+                            <a href="{{ route('clubs.voting.create', $club) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+                                + Nueva Votación
+                            </a>
+                        @else
+                            <a href="{{ route('clubs.voting.index', $club) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                                Votar →
+                            </a>
+                        @endif
+                    @endauth
+                </div>
+                <p class="text-gray-600 mb-2">Ayuda al club a elegir el próximo libro a leer mediante votación democrática.</p>
+                <p class="text-sm text-gray-500">Cada miembro puede votar una sola vez durante el período de votación.</p>
+            </div>
         </div>
 
         <!-- Sidebar -->

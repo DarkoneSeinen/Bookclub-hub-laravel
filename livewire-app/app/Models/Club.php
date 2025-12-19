@@ -58,6 +58,14 @@ class Club extends Model
     }
 
     /**
+     * Get all voting periods in this club
+     */
+    public function votingPeriods(): HasMany
+    {
+        return $this->hasMany(VotingPeriod::class);
+    }
+
+    /**
      * Get all books in this club (through readings)
      */
     public function books(): BelongsToMany
