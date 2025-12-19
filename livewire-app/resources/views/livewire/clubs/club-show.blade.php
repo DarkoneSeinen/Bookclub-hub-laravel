@@ -1,4 +1,30 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Active Voting Banner -->
+    @php
+        $activeVoting = $club->votingPeriods()
+            ->where('status', 'activa')
+            ->where('end_date', '>', now())
+            ->latest()
+            ->first();
+    @endphp
+
+    @if($activeVoting)
+        <div class="mb-6 bg-green-50 border-l-4 border-green-600 p-4 rounded">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-semibold text-green-900">🗳️ Votación Activa</h3>
+                    <p class="text-green-700 mt-1"><strong>{{ $activeVoting->title }}</strong></p>
+                    <p class="text-sm text-green-600 mt-1">
+                        Termina el {{ $activeVoting->end_date->format('d/m/Y H:i') }}
+                    </p>
+                </div>
+                <a href="{{ route('clubs.voting.show', [$club, $activeVoting]) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition whitespace-nowrap">
+                    Votar Ahora
+                </a>
+            </div>
+        </div>
+    @endif
+
     <!-- Club Header -->
     <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
         <div class="relative h-48 bg-gradient-to-r from-blue-400 to-blue-600">
@@ -139,17 +165,22 @@
             <div class="bg-white rounded-lg shadow p-6 mb-8">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-gray-900">🗳️ Votación Próximo Libro</h2>
-                    @auth
-                        @if(auth()->user()->id === $club->owner_id)
-                            <a href="{{ route('clubs.voting.create', $club) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
-                                + Nueva Votación
-                            </a>
-                        @else
-                            <a href="{{ route('clubs.voting.index', $club) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-                                Votar →
-                            </a>
-                        @endif
-                    @endauth
+                    <div class="flex gap-2">
+                        <a href="{{ route('clubs.voting.history', $club) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm">
+                            📊 Historial
+                        </a>
+                        @auth
+                            @if(auth()->user()->id === $club->owner_id)
+                                <a href="{{ route('clubs.voting.create', $club) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+                                    + Nueva Votación
+                                </a>
+                            @else
+                                <a href="{{ route('clubs.voting.index', $club) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                                    Votar →
+                                </a>
+                            @endif
+                        @endauth
+                    </div>
                 </div>
                 <p class="text-gray-600 mb-2">Ayuda al club a elegir el próximo libro a leer mediante votación democrática.</p>
                 <p class="text-sm text-gray-500">Cada miembro puede votar una sola vez durante el período de votación.</p>
