@@ -312,7 +312,7 @@ MAIL_FROM_ADDRESS=no-reply@bookclub.local
 
 1. **Clonar y configurar:**
    ```bash
-   git clone https://github.com/tu-usuario/Livewire-Laravel.git
+   git clone https://github.com/DarkoneSeinen/Bookclub-hub-laravel.git
    cd Livewire-Laravel/livewire-app
    composer install
    npm install
@@ -358,21 +358,4 @@ MAIL_FROM_ADDRESS=no-reply@bookclub.local
 
 Este proyecto está bajo la Licencia MIT. Ver archivo [LICENSE](./LICENSE) para más detalles.
 
----
 
-## 👨‍💻 Desarrollo
-
-Desarrollado como proyecto educativo demostrando:
-- Arquitectura Laravel moderna
-- Componentes reactivos con Livewire
-- Diseño responsivo con Tailwind
-- Buenas prácticas de seguridad
-- Validación y autorización granular
-
----
-
-## 📞 Contacto y Soporte
-
-Para dudas, reportar bugs o sugerencias, abrir un issue en el repositorio.
-
-Happy reading! 📚✨
