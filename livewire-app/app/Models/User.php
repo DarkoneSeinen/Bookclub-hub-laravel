@@ -69,6 +69,14 @@ class User extends Authenticatable
         return $this->hasMany(Wishlist::class);
     }
 
+    /**
+     * Get the discussions created by this user
+     */
+    public function discussions()
+    {
+        return $this->hasMany(Discussion::class, 'created_by');
+    }
+
     // Helpers
     public function isAdmin()
     {
